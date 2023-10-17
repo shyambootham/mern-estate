@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import useRouter from "./routes/user.route.js";
 dotenv.config();
 
 // Do not encode the entire connection string
@@ -18,3 +19,5 @@ const app = express();
 app.listen(3000, () => {
   console.log("server is running in 3000!!!");
 });
+
+app.use("/api/user", useRouter);
