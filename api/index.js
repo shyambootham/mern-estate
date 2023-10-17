@@ -6,7 +6,7 @@ dotenv.config();
 // Do not encode the entire connection string
 
 mongoose
-  .connect(process.env.Mongo)
+  .connect(process.env.MONGO)
   .then(() => {
     console.log("connected to mongodb");
   })
