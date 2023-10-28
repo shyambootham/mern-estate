@@ -5,13 +5,15 @@ import {
   signInStart,
   signInSuccess,
   signInFailure,
-} from "../redux/user/userSlice";
+} from "../redux/user/userSlice.js";
 
-export default function SignIp() {
+export default function SignIn() {
   const [formData, setFormData] = useState({});
+
   const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -29,6 +31,7 @@ export default function SignIp() {
         return;
       }
       dispatch(signInSuccess(data));
+
       navigate("/");
     } catch (error) {
       dispatch(signInFailure(error.message));
@@ -66,7 +69,7 @@ export default function SignIp() {
       <div className="flex gap-2 mt-5">
         <p>Don't Have an account?</p>
         <Link to={"/Sign-Up"}>
-          <span className="text-blue-700">signup</span>
+          <span className="text-blue-700">sign---up</span>
         </Link>
       </div>
       {error && <p className="text-red-500 mt-5">{error}</p>}
