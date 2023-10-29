@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      type: String,
+      default:
+        "https://www.pinclipart.com/picdir/big/157-1578186_user-profile-default-image-png-clipart.png",
+    },
   },
   { timestamps: true }
 );
