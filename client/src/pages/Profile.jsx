@@ -20,6 +20,7 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 //fire base
 //allow read;
 //allow write:if
@@ -191,6 +192,12 @@ export default function Profile() {
         >
           {loading ? "loading" : "update"}
         </button>
+        <Link
+          className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
+          to="/create-listing"
+        >
+          create listng
+        </Link>
       </form>
       <div className="flex justify-between">
         <span
