@@ -111,9 +111,10 @@ export default function CreateListing() {
     }
   };
   const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      if (formData.imageUrls.length < 1) e.preventDefault();
-      return setError("you must upload at least one image");
+      if (formData.imageUrls.length < 1)
+        return setError("you must upload at least one image");
       if (+formData.regularPrice < +formData.discountedPrice)
         return setError("discounted price must be lower than regular price");
 

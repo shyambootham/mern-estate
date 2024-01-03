@@ -21,6 +21,7 @@ import {
 import { app } from "../firebase";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import Listing from "../../../api/models/listing.model";
 //fire base
 //allow read;
 //allow write:if
@@ -30,14 +31,15 @@ import { Link } from "react-router-dom";
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
-
+  console.log(currentUser._id);
   const [file, setFile] = useState(undefined);
 
   const [fileError, setFileError] = useState(false);
   const [filepercent, setFilepercent] = useState(0);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
-
+  const [showListingError, setShowListingError] = useState(false);
+  const [userListings, setUserListings] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
@@ -102,7 +104,7 @@ export default function Profile() {
   };
   const handleDeleteUser = async () => {
     try {
-      dispatch(deleteUserStart);
+      dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
       });
@@ -128,6 +130,39 @@ export default function Profile() {
       dispatch(signoutUserSuccess(data));
     } catch (error) {
       dispatch(signoutUserFailure(error.message));
+    }
+  };
+  const handleShowListings = async () => {
+    try {
+      setShowListingError(false);
+      const res = await fetch(`api/user/listings/${currentUser._id}`);
+      const data = await res.json();
+      if (data.success === false) {
+        setShowListingError(true);
+        return;
+      }
+      console.log(data);
+      setUserListings(data);
+    } catch (error) {
+      setShowListingError(true);
+    }
+  };
+  console.log(userListings);
+  const handleDeleteListing = async (listingId) => {
+    try {
+      const res = await fetch(`api/listing/delete/${listingId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      setUserListings((prev) =>
+        prev.filter((listing) => listing._id !== listingId)
+      );
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
@@ -215,6 +250,48 @@ export default function Profile() {
       <p className="text-green-600">
         {updateSuccess ? "updated successfully" : ""}
       </p>
+      <button onClick={handleShowListings} className="text-green-600 w-full">
+        Show listings
+      </button>
+      <p>{showListingError ? "error showing listings" : ""}</p>
+      <div>
+        {userListings && userListings.length > 0 && (
+          <div className="flex flex-col gap-4">
+            <h1 className="text-center mt-7 text-2xl font-semibold">
+              your listings
+            </h1>
+            {userListings.map((listing) => (
+              <div
+                key={listing._id}
+                className="border rounded-lg p-3 gap-4 flex justify-between items-center"
+              >
+                <Link to={`/listing/${listing._id}`}>
+                  <img
+                    src={listing.imageUrls[0]}
+                    alt="listing cover"
+                    className="h-16 w-16 object-contain"
+                  />
+                </Link>
+                <Link
+                  className="text-slate-700 flex-1 font-semibold  hover:underline truncate"
+                  to={`/listing/${listing._id}`}
+                >
+                  <p>{listing.name}</p>
+                </Link>
+                <div className="flex flex-col items-center">
+                  <button
+                    onClick={() => handleDeleteListing(listing._id)}
+                    className="text-red-700 uppercase"
+                  >
+                    Delete
+                  </button>
+                  <button className="text-green-700 uppercase">Edit</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
