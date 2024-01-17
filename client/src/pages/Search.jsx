@@ -15,7 +15,9 @@ export default function Search() {
   });
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
+  const [showMore, setShowMore] = useState(false);
   console.log(listings);
+  console.log(listings.length);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -47,10 +49,16 @@ export default function Search() {
     }
     const fetchListings = async () => {
       setLoading(true);
+      setShowMore(false);
       const searchQuery = urlParams.toString();
       console.log(searchQuery);
       const res = await fetch(`/api/listing/get?${searchQuery}`);
       const data = await res.json();
+      if (data.length > 8) {
+        setShowMore(true);
+      } else {
+        setShowMore(false);
+      }
 
       setListings(data);
 
@@ -101,11 +109,26 @@ export default function Search() {
     navigate(`/search?${searchQuery}`);
     console.log(sidebardata);
   };
+  const onShowMoreClick = async () => {
+    const numberOfListings = listings.length;
+    const startIndex = numberOfListings;
+
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("startIndex", startIndex);
+    const searchQuery = urlParams.toString();
+    console.log(searchQuery);
+    const res = await fetch(`/api/listing/get?${searchQuery}`);
+    const data = await res.json();
+    if (data.length < 9) {
+      setShowMore(false);
+    }
+    setListings([...listings, ...data]);
+  };
 
   return (
     <div className="flex flex-col md:flex-row ">
-      <div className="p-7  border-b-2 md:border-r-2 md:min-h-screen  ">
-        <form onSubmit={handleSubmit} className="gap-2 flex flex-col ">
+      <div className="p-7  border-b-2 md:border-r-2 md:min-h-screen w-[300px]  ">
+        <form onSubmit={handleSubmit} className="gap-10 flex flex-col ">
           <div className="flex justify-center items-center gap-2">
             <label className=" font-semibold whitespace-nowrap">
               Search Term
@@ -204,11 +227,11 @@ export default function Search() {
           </button>
         </form>
       </div>
-      <div className=" flex-1">
+      <div className=" flex-1 ">
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-700 mt-5">
           Listing results:
         </h1>
-        <div className="p-7 flex fex-wrap gap-4">
+        <div className="p-7 flex flex-wrap gap-5  w-full">
           {!loading && listings.length === 0 && (
             <p className="text-xl text-slate-700e"> no listing found</p>
           )}
@@ -222,6 +245,14 @@ export default function Search() {
             listings.map((listing) => (
               <ListingItem key={listing._id} listing={listing} />
             ))}
+          {showMore && (
+            <button
+              onClick={onShowMoreClick}
+              className="text-green-700 hover:underline p-7 text-center w-full   "
+            >
+              show more
+            </button>
+          )}
         </div>
       </div>
     </div>
