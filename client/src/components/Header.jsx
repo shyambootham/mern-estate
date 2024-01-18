@@ -13,14 +13,12 @@ export default function Header() {
     urlParams.set("searchTerm", searchTerm);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
-    console.log(searchTerm);
-    console.log(searchQuery);
   };
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    console.log(urlParams);
+
     const searchTermFromUrl = urlParams.get("searchTerm");
-    console.log(searchTermFromUrl);
+
     if (searchTermFromUrl) {
       setSearchTerm(searchTermFromUrl);
     } else {
